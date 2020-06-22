@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -6,30 +6,29 @@ import {
   Switch
 } from 'react-router-dom';
 
-import Users from './user/pages/Users';
-import NewPlace from './places/pages/NewPlace';
-import UserPlaces from './places/pages/UserPlaces';
-import UpdatePlace from './places/pages/UpdatePlace';
-import Auth from './user/pages/Auth';
+// import Users from './user/pages/Users';
+// import NewPlace from './places/pages/NewPlace';
+// import UserPlaces from './places/pages/UserPlaces';
+// import UpdatePlace from './places/pages/UpdatePlace';
+// import Auth from './user/pages/Auth';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
-import { AuthContext } from './shared/context/auth.context';
-
+import { AuthContext } from './shared/context/auth.context'
+import { useAuth } from "./shared/hooks/auth-hook";
+import LoadingSpinner from './shared/components/UIElements/LoadingSpinner';
 import './App.css';
 
+const Users = React.lazy(() => import('./user/pages/Users'));
+const NewPlace = React.lazy(() => import('./places/pages/NewPlace'));
+const UserPlaces = React.lazy(() => import('./places/pages/UserPlaces'));
+const UpdatePlace = React.lazy(() => import('./places/pages/UpdatePlace'));
+const Auth = React.lazy(() => import('./user/pages/Auth'));
+
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const login = useCallback(() => {
-    setIsLoggedIn(true);
-  }, []);
-
-  const logout = useCallback(() => {
-    setIsLoggedIn(false);
-  }, []);
+  const { token, login, logout, userId } = useAuth();
 
   let routes;
 
-  if(isLoggedIn) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -65,13 +64,29 @@ const App = () => {
   }
 
   return (
-    <AuthContext.Provider 
-      value={{isLoggedIn: isLoggedIn, login: login, logout: logout}}
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: !!token,
+        token: token,
+        userId: userId,
+        login: login,
+        logout: logout
+      }}
     >
       <Router>
         <MainNavigation />
-        <main>{routes}</main>
-        <footer className="footer"><h3>All right resvered by Seher Mahmud, seher.mahmud@gmail.com</h3></footer>
+        <main>
+          <Suspense 
+            fallback={
+              <div className="center">
+                <LoadingSpinner />
+              </div>
+            }
+          >
+            {routes}
+          </Suspense>
+        </main> 
+        <footer className="footer"><h3>All right reversed by Seher Mahmud, seher.mahmud@gmail.com</h3></footer>
       </Router>
     </AuthContext.Provider>
   );

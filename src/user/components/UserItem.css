@@ -12,16 +12,16 @@
   text-decoration: none;
   padding: 1rem;
   color: white;
-  background: #292929;
+  background: skyblue;
 }
 
 .user-item a:hover,
 .user-item a:active {
-  background: #ffd900;
+  background: lightpink;
 }
 
-.user-item__content {
-  padding: 0;
+.card.user-item__content {
+  padding: 0 ;
 }
 
 .user-item__image {
@@ -34,7 +34,7 @@
   font-size: 1.5rem;
   margin: 0 0 0.5rem 0;
   font-weight: normal;
-  color: #ffd900;
+  color: palevioletred;
 }
 
 .user-item:hover h2,
